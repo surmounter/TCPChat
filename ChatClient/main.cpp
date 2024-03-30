@@ -14,12 +14,14 @@ int main()
 		{
 			std::cout << message << std::endl;
 		};
-		client.Run();
-		std::string messageToSend;
-		while (true)
+		if (client.Run())
 		{
-			std::getline(std::cin, messageToSend);
-			client.Send(messageToSend);
+			std::string messageToSend;
+			while (client.IsConnected())
+			{
+				std::getline(std::cin, messageToSend);
+				client.Send(messageToSend);
+			}
 		}
 	}
 	return 0;

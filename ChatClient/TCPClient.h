@@ -21,9 +21,11 @@ public:
 	bool Init();
 	bool Run();
 	bool Send(const std::string& message);
+	bool IsConnected() const { return isConnected_; }
 	using OnReceived = std::function<void(const std::string&)>;
 	OnReceived& GetOnReceived() { return onReceived_; }
 private:
+	bool isConnected_ = false;
 	sockaddr_in serverAddress_;
 	SOCKET serverSocket_;
 	Thread recvThread_;

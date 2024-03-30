@@ -35,6 +35,7 @@ bool TCPClient::Run()
 		closesocket(serverSocket_);
 		return false;
 	}
+	isConnected_ = true;
 	recvThread_.thread_ = std::thread([this]
 	{
 		recvThread_.isRunning_ = true;
@@ -46,13 +47,15 @@ bool TCPClient::Run()
 			const int bytesReceived = recv(serverSocket_, buffer, MaxBufferSize, 0);
 			if (bytesReceived <= 0)
 			{
-				continue;
+				isConnected_ = false;
+				break;
 			}
 			if (onReceived_)
 			{
 				onReceived_(std::string(buffer, 0, bytesReceived));
 			}
 		}
+		recvThread_.isRunning_ = false;
 	});
 	return true;
 }
@@ -63,7 +66,6 @@ bool TCPClient::Send(const std::string& message)
 	{
 		return false;
 	}
-	send(serverSocket_, message.c_str(), message.size() + 1, 0);
-	return true;
+	return send(serverSocket_, message.c_str(), message.size() + 1, 0) != SOCKET_ERROR;
 }
 
